@@ -1,0 +1,355 @@
+@charset "UTF-8";
+
+  // ############################################################# \\
+ // ##################### PX to REM Conversion #################### \\
+// ################################################################# \\
+
+@function parseInt($n) {
+  @return $n / ($n * 0 + 1);
+}
+
+@mixin rem($property, $values) {
+  $px : ();
+  $rem: ();
+
+  @each $value in $values {
+    @if $value == 0 or $value == auto {
+      $px : append($px , $value);
+      $rem: append($rem, $value); 
+    }
+
+    @else {
+      $unit: unit($value);
+      $val: parseInt($value);
+
+      @if $unit == "px" {
+        $px : append($px,  $value);
+        $rem: append($rem, ($val / 16 + rem));
+      }
+
+      @if $unit == "rem" {
+        $px : append($px,  ($val * 16 + px));
+        $rem: append($rem, $value);
+      }
+    }
+  }
+
+  @if $px == $rem {
+    #{$property}: $px;
+  } @else {
+    #{$property}: $px;
+    #{$property}: $rem;
+  }
+}
+
+  // ########################################################## \\
+ // ######################## Text Shadow ####################### \\
+// ############################################################## \\
+
+@mixin text-shadow($params...) {
+  $value: ();
+
+  @for $i from 1 through length($params) {
+    // Takes each items come from $params.
+    $item: nth($params, $i);
+
+    // The first value comes from the $item is direction.
+    // This will be used in the @if, @else statements with $size to control the offset of the shadows.
+    $direction: nth($item, 1);
+
+    // Second value is the color.
+    $color: nth($item, 2);
+
+    // The third value is the actual offset value of the shadows.
+    $size: nth($item, 3);
+
+    // Takes the unit of the $size value to use it later to increment the amount of shadow based on the unit.
+    $sizeUnit: unit($size);
+
+    // The $blur argument is optional. It controls the size of the blur.
+    $blur: null;
+
+    // The $fill argument is optional. This makes shadow fill the gap between the actual text and shadow's end-point. The default value is set to false.
+    $fill: null;
+
+    // Assigns the optional sub-arguments to the actual argument.
+    @if length($item) == 4 and type-of(nth($item, 4)) == number {
+      $blur: nth($item, length($item));
+    } @else if length($item) == 4 and type-of(nth($item, 4)) == bool {
+      $fill: nth($item, length($item));
+    } @else if length($item) == 5 {
+      $blur: nth($item, 4);
+      $fill: nth($item, length($item));
+    }
+
+    // angle of $direction of the shadow based on the predefined values.
+    @if $direction == "top" {
+      @if $fill == true {
+        // The __clearUnit(); function is used here due to it is not possible to count $size with a unit. First, it clears the unit from the $size argument and then adds it back again in the @for loop.
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: 0 -#{$increase} $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: 0 -#{$size} $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    } @else if $direction == "top-left" {
+      @if $fill == true {
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: -#{$increase} -#{$increase} $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: -#{$size} -#{$size} $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    } @else if $direction == "top-right" {
+      @if $fill == true {
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: #{$increase} -#{$increase} $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: #{$size} -#{$size} $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    } @else if $direction == "bottom" {
+      @if $fill == true {
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: 0 #{$increase} $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: 0 #{$size} $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    } @else if $direction == "bottom-left" {
+      @if $fill == true {
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: -#{$increase} #{$increase} $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: -#{$size} #{$size} $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    } @else if $direction == "bottom-right" {
+      @if $fill == true {
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: #{$increase} #{$increase} $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: #{$size} #{$size} $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    } @else if $direction == "left" {
+      @if $fill == true {
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: -#{$increase} 0 $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: -#{$size} 0 $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    } @else if $direction == "right" {
+      @if $fill == true {
+        @for $i from 1 through __clearUnit($size) {
+          $increase: $i * 1 + $sizeUnit;
+          $shadow: #{$increase} 0 $blur $color;
+          $value: append($value, $shadow, comma);
+        }
+      } @else {
+        $shadow: #{$size} 0 $blur $color;
+        $value: append($value, $shadow, comma);
+      }
+    }
+  }
+  text-shadow: $value;
+}
+
+  // ########################################################## \\
+ // ######################## Translate ######################### \\
+// ############################################################## \\
+
+@mixin translate($x, $y) {
+  -webkit-transform: translate($x, $y);
+     -moz-transform: translate($x, $y);
+      -ms-transform: translate($x, $y);
+       -o-transform: translate($x, $y);
+          transform: translate($x, $y);
+}
+@mixin translateX($x) {
+  -webkit-transform: translateX($x);
+     -moz-transform: translateX($x);
+      -ms-transform: translateX($x);
+       -o-transform: translateX($x);
+          transform: translateX($x);
+}
+@mixin translateY($y) {
+  -webkit-transform: translateY($y);
+     -moz-transform: translateY($y);
+      -ms-transform: translateY($y);
+       -o-transform: translateY($y);
+          transform: translateY($y);
+}
+
+  // ########################################################## \\
+ // ####################### Box Shadow ######################### \\
+// ############################################################## \\
+
+@mixin box-shadow($top, $left, $blur, $color, $inset: false) {
+  @if $inset {
+    -webkit-box-shadow:inset $top $left $blur $color;
+    -moz-box-shadow:inset $top $left $blur $color;
+    box-shadow:inset $top $left $blur $color;
+  } @else {
+    -webkit-box-shadow: $top $left $blur $color;
+    -moz-box-shadow: $top $left $blur $color;
+    box-shadow: $top $left $blur $color;
+  }
+}
+
+  // ########################################################## \\
+ // ######################## Textfield ######################### \\
+// ############################################################## \\
+
+@mixin text-field {
+ display: inline-block;
+  outline: none;
+  text-decoration: none;
+  font: 14px/100% Arial, Helvetica, sans-serif;
+  padding: .5em;
+  text-shadow: 0 1px 1px rgba(0,0,0,.3);
+  @include rounded();
+  @include box-shadow(0, 1px, 2px, rgba(0, 0, 0, 0.2));
+}
+
+  // ########################################################## \\
+ // ########################## Button ########################## \\
+// ############################################################## \\
+
+@mixin button($color: $red, $text_color: $white) {
+  display: inline-block;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font: 14px/100% Arial, Helvetica, sans-serif;
+  padding: .5em 2em .55em;
+  text-shadow: 0 1px 1px rgba(0,0,0,.3);
+  @include rounded();
+  @include box-shadow(0, 1px, 2px, rgba(0, 0, 0, 0.2));
+
+  color: $text_color !important;
+  font-weight: bold;
+  border: solid 1px darken($color, 18%);
+  background: $color;
+  @include gradient(saturate($color, 15%), darken($color, 15%));
+
+  &:hover {
+    text-decoration: none;
+    background: saturate($color, 10%);
+    @include gradient(saturate($color, 5%), darken($color, 5%));
+  }
+
+  &:active {
+    position: relative;
+    top: 1px;
+    color: saturate($color, 15%);
+    @include gradient(saturate($color, 15%), lighten($color, 15%));
+  }
+}
+
+  // ########################################################## \\
+ // ###################### Rounded Corners ##################### \\
+// ############################################################## \\
+
+@mixin rounded($radius) {
+-webkit-border-radius: $radius;
+-moz-border-radius: $radius;
+border-radius: $radius;
+}
+
+  // ########################################################## \\
+ // ####################### Gradient Fill ###################### \\
+// ############################################################## \\
+
+@mixin gradient($from, $to) {
+  background: -webkit-gradient(linear, left top, left bottom, from($from), to($to));
+  background: -moz-linear-gradient(top,  $from, $to);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$from}', endColorstr='#{$to}');
+}
+
+
+@mixin transition($transition...) {
+    -moz-transition:    $transition;
+    -o-transition:      $transition;
+    -webkit-transition: $transition;
+    transition:         $transition;
+}
+@mixin transition-property($property...) {
+    -moz-transition-property:    $property;
+    -o-transition-property:      $property;
+    -webkit-transition-property: $property;
+    transition-property:         $property;
+}
+@mixin transition-duration($duration...) {
+    -moz-transition-property:    $duration;
+    -o-transition-property:      $duration;
+    -webkit-transition-property: $duration;
+    transition-property:         $duration;
+}
+@mixin transition-timing-function($timing...) {
+    -moz-transition-timing-function:    $timing;
+    -o-transition-timing-function:      $timing;
+    -webkit-transition-timing-function: $timing;
+    transition-timing-function:         $timing;
+}
+@mixin transition-delay($delay...) {
+    -moz-transition-delay:    $delay;
+    -o-transition-delay:      $delay;
+    -webkit-transition-delay: $delay;
+    transition-delay:         $delay;
+}
+
+// @include transition(background-color 1s 2s, color 2s);
+
+// Form Mixins
+@mixin disable{
+  outline:none;
+  border:none;
+}
+
+@mixin easeme1{
+  -webkit-transition:1s ease !important;
+  -moz-transition:1s ease !important;
+  -o-transition:1s ease !important;
+  -ms-transition:1s ease !important;
+  transition:1s ease !important;
+}
+
+@mixin easeme2{
+  -webkit-transition:0.5s ease !important;
+  -moz-transition:0.5s ease !important;
+  -o-transition:0.5s ease !important;
+  -ms-transition:0.5s ease !important;
+  transition:0.5s ease !important;
+}
+
+@mixin easeme3{
+  -webkit-transition:0.5s !important;
+  -moz-transition:0.5s !important;
+  -o-transition:0.5s !important;
+  -ms-transition:0.5s !important;
+  transition:0.5s !important;
+}
